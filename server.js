@@ -39,7 +39,10 @@ let errors = {
 
 //bara api
 app.get('/api', (req, res) => {
-    res.json({ message: 'Välkommen till mitt API. Du hittar dokumentationen på Github' });
+    res.json({
+        message:
+            'Välkommen till mitt API. Du hittar dokumentationen på Github: https://github.com/sagaeinkik/cv-api',
+    });
 });
 
 app.get('/api/cv', (req, res) => {
@@ -50,7 +53,7 @@ app.get('/api/cv', (req, res) => {
         (err, results) => {
             if (err) {
                 //Hantera error
-                errors.https_response.message = 'Internal server error';
+                errors.https_response.message = 'Internal server error: ' + err;
                 errors.https_response.code = 500;
 
                 res.status(errors.https_response.code).json({ error: errors });
@@ -67,6 +70,36 @@ app.get('/api/cv', (req, res) => {
             } else {
                 //Visa resultat
                 res.json(results);
+            }
+        }
+    );
+});
+
+app.get('/api/cv/:id', (req, res) => {
+    //Lagra param
+    let id = req.params.id;
+
+    db.query(
+        `SELECT id, company, title, description, DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date, DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date FROM cv WHERE id=?`,
+        [id],
+        (err, result) => {
+            if (err) {
+                errors.https_response.message = 'Internal server error: ' + err;
+                errors.https_response.code = 500;
+
+                res.status(errors.https_response.code).json({ error: errors });
+                return;
+            }
+            if (result.length === 0) {
+                errors.https_response.message = 'Not found';
+                errors.https_response.code = 404;
+                errors.message = 'No data to show';
+
+                res.status(errors.https_response.code).json({ error: errors });
+                return;
+            } else {
+                //Visa resultat
+                res.json(result);
             }
         }
     );
