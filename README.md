@@ -1,17 +1,15 @@
 # CV-API
 
-## Av S.E.K för DT207G
-
----
+Av S.E.K för DT207G
 
 ## Installation
 
 Mitt API använder MySQL som databas. Variablerna ligger i en .env-fil. Du kan se vilka variabler du behöver nedan.
-`DB_HOST=YOUR_HOST
-DB_NAME=YOUR_DB_NAME
-DB_PORT=YOUR_DB_PORT
-DB_USERNAME=YOUR_USERNAME
-DB_PASSWORD=YOUR_PASSWORD
+`DB_HOST=YOUR_HOST  
+DB_NAME=YOUR_DB_NAME  
+DB_PORT=YOUR_DB_PORT  
+DB_USERNAME=YOUR_USERNAME  
+DB_PASSWORD=YOUR_PASSWORD  
 PORT=YOUR_PORT`
 
 För att testa lokalt finns installationsfilen `install.js` som du kör med kommandot `npm run install`.  
@@ -34,13 +32,13 @@ För att nå API:et använder du /api följt av något av följande:
 | DELETE | /cv/:id | Tar bort jobbinstans med specifikt ID |
 
 API:et svarar i JSON-format:
-`[
-  {
-    "id": 1,
-    "company": "Firma 1",
-    "title": "Jobb 1",
-    "description": "Klappade katter",
-    "start_date": "2023-04-14",
-    "end_date": "2024-01-01"
-  }
+`[  
+  {  
+    "id": 1,  
+    "company": "Firma 1",  
+    "title": "Jobb 1",  
+    "description": "Klappade katter",  
+    "start_date": "2023-04-14",  
+    "end_date": "2024-01-01"  
+  }  
 ]`
