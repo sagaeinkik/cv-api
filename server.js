@@ -41,10 +41,11 @@ let errors = {
 app.get('/api', (req, res) => {
     res.json({
         message:
-            'Välkommen till mitt API. Du hittar dokumentationen på Github: https://github.com/sagaeinkik/cv-api',
+            'Välkommen till mitt API. Det skapades under moment 2 i Backendbaserad Webbutveckling (DT207G) på Mittuniversitet 2024. Du hittar dokumentationen på Github: https://github.com/sagaeinkik/cv-api',
     });
 });
 
+//Hämta alla jobb
 app.get('/api/cv', (req, res) => {
     //Hämta data ur cv-tabell och formattera datumet snyggare
     db.query(
@@ -105,6 +106,7 @@ app.get('/api/cv/:id', (req, res) => {
     );
 });
 
+//Lägg till nytt jobb
 app.post('/api/cv', (req, res) => {
     //Lagra datan i variabler
     let company = req.body.company;
@@ -162,6 +164,7 @@ app.post('/api/cv', (req, res) => {
                     res.status(errors.https_response.code).json({ error: errors });
                     return;
                 }
+                //Gör jobb-objekt att visa i thunderclient
                 let job = {
                     company: company,
                     title: title,
