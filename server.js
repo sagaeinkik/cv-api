@@ -54,7 +54,7 @@ app.get('/api/cv', (req, res) => {
         (err, results) => {
             if (err) {
                 //Hantera error
-                errors.https_response.message = 'Internal server error: ' + err;
+                errors.https_response.message = `Internal server error: ${err}`;
                 errors.https_response.code = 500;
 
                 res.status(errors.https_response.code).json({ error: errors });
@@ -85,7 +85,7 @@ app.get('/api/cv/:id', (req, res) => {
         [id],
         (err, result) => {
             if (err) {
-                errors.https_response.message = 'Internal server error: ' + err;
+                errors.https_response.message = `Internal server error: ${err}`;
                 errors.https_response.code = 500;
 
                 res.status(errors.https_response.code).json({ error: errors });
@@ -111,7 +111,7 @@ app.post('/api/cv', (req, res) => {
     //Lagra datan i variabler
     let company = req.body.company;
     let title = req.body.title;
-    let desc = req.body.desc;
+    let description = req.body.description;
     let startDate = req.body.startDate;
     let endDate = req.body.endDate;
 
@@ -130,7 +130,7 @@ app.post('/api/cv', (req, res) => {
         errors.https_response.code = 400;
         errors.message = 'Input missing';
         errors.details = 'You must fill out jobtitle';
-    } else if (!desc) {
+    } else if (!description) {
         errors.https_response.message = 'Bad request';
         errors.https_response.code = 400;
         errors.message = 'Input missing';
@@ -154,11 +154,11 @@ app.post('/api/cv', (req, res) => {
         (company, title, description, start_date, end_date)
         VALUES
         (?, ?, ?, ?, ?);`,
-            [company, title, desc, startDate, endDate],
+            [company, title, description, startDate, endDate],
             (err, result) => {
                 if (err) {
                     //Hantera error
-                    errors.https_response.message = 'Internal server error';
+                    errors.https_response.message = `Internal server error: ${err}`;
                     errors.https_response.code = 500;
 
                     res.status(errors.https_response.code).json({ error: errors });
@@ -168,7 +168,7 @@ app.post('/api/cv', (req, res) => {
                 let job = {
                     company: company,
                     title: title,
-                    description: desc,
+                    description: description,
                     startDate: startDate,
                     endDate: endDate,
                 };
@@ -179,14 +179,55 @@ app.post('/api/cv', (req, res) => {
     }
 });
 
+//Uppdatera befintligt jobb
 app.put('/api/cv/:id', (req, res) => {
     res.json({ message: 'Put lyckades med id: ' + req.params.id });
 });
 
+//Radera jobb
 app.delete('/api/cv/:id', (req, res) => {
-    res.json({ message: 'Delete lyckades med id: ' + req.params.id });
+    let id = req.params.id;
+    //Kolla om det finns id i parameter annars ge felmeddelande
+    if (id === '') {
+        errors.https_response.message = 'Bad request';
+        errors.https_response.code = 400;
+        errors.message = 'Parameter missing';
+        errors.details = 'You must supply an id in parameter';
+        res.status(errors.https_response.code).json({ error: errors });
+        return;
+    }
+
+    //Välj ut post med det ID:et
+    db.query(`SELECT * FROM cv WHERE id=?`, [id], (err, result) => {
+        if (err) {
+            errors.https_response.message = 'Internal server error';
+            errors.https_response.code = 500;
+            res.status(errors.https_response.code).json({ error: errors });
+            return;
+        } else if (result.length < 1) {
+            //Kontrollera längd; om det inte gav något resultat så finns inte den posten
+            errors.https_response.message = 'Not found';
+            errors.https_response.code = 404;
+            errors.message = 'Matching data not found';
+            errors.details = 'There is no post in the database with that ID';
+            res.status(errors.https_response.code).json({ error: errors });
+            return;
+        }
+        //Om vi har kommit såhär långt så tar vi bort den raden ur tabellen
+        db.query(`DELETE FROM cv WHERE id=?`, [id], (err, result) => {
+            if (err) {
+                errors.https_response.message = 'Internal server error';
+                errors.https_response.code = 500;
+                res.status(errors.https_response.code).json({ error: errors });
+                return;
+            }
+            //Kolla om det funka
+            res.json({ message: 'delete mot id: ' + id, result });
+        });
+    });
 });
 
+//Starta app
 app.listen(port, (error) => {
     if (error) {
         console.error(error);
