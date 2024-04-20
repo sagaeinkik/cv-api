@@ -28,10 +28,10 @@ Tabellen som skapas ser ut som följande:
 API:et nås på https://cv-api-nqg3.onrender.com/api följt av någon av dessa metoder/queries:
 
 | Metod  | Ändpunkt | Beskrivning                               |
-| ------ | -------- | ----------------------------------------- | --- |
-| GET    |  /cv     |  Hämtar all data                          |     |
-|  GET   |  /cv/:id |  Hämtar all data tillhörande specifikt ID |
-|  POST  |  /cv     |  Lagrar ny jobbinstans                    |
+| ------ | -------- | ----------------------------------------- |
+| GET    |  /cv     |  Hämtar all data                          |
+| GET    |  /cv/:id |  Hämtar all data tillhörande specifikt ID |
+| POST   |  /cv     |  Lagrar ny jobbinstans                    |
 | PUT    |  /cv/:id |  Uppdaterar jobbinstans med specifikt ID  |
 | DELETE |  /cv/:id |  Tar bort jobbinstans med specifikt ID    |
 
