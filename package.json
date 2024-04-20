@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js", 
-    "install": "node install.js"
+    "installation": "node install.js"
   },
   "author": "Saga K",
   "license": "ISC",
