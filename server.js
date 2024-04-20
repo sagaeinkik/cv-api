@@ -33,16 +33,6 @@ db.connect((err) => {
     }
 });
 
-//Error-meddelanden:
-let errors = {
-    https_response: {
-        message: '',
-        code: '',
-    },
-    message: '',
-    details: '',
-};
-
 /* Routing */
 
 //bara api
@@ -66,6 +56,7 @@ app.get('/api/cv', (req, res) => {
                 errors.https_response.code = 500;
 
                 res.status(errors.https_response.code).json({ error: errors });
+                console.log(err.fatal);
                 return;
             }
             //Kontrollera att data finnes
@@ -128,6 +119,16 @@ app.post('/api/cv', (req, res) => {
         endDate = 'Anställning pågående';
     }
 
+    //Error-meddelanden: (de behöver ändå återställas)
+    let errors = {
+        https_response: {
+            message: '',
+            code: '',
+        },
+        message: '',
+        details: '',
+    };
+
     //Validering/felhantering
     if (!company) {
         errors.https_response.message = 'Bad request';
@@ -144,7 +145,7 @@ app.post('/api/cv', (req, res) => {
         errors.https_response.code = 400;
         errors.message = 'Input missing';
         errors.details = 'You must fill out job description';
-    } else if (!startDate || startDate === undefined) {
+    } else if (!startDate || startDate === undefined || startDate === null) {
         errors.https_response.message = 'Bad request';
         errors.https_response.code = 400;
         errors.message = 'Input missing';
@@ -169,6 +170,7 @@ app.post('/api/cv', (req, res) => {
                     //Hantera error
                     errors.https_response.message = `Internal server error: ${err}`;
                     errors.https_response.code = 500;
+                    console.log(err);
 
                     res.status(errors.https_response.code).json({ error: errors });
                     return;
@@ -207,6 +209,16 @@ app.put('/api/cv/:id', (req, res) => {
     let description = req.body.description;
     let startDate = req.body.startDate;
     let endDate = req.body.endDate;
+
+    //Error-meddelanden:
+    let errors = {
+        https_response: {
+            message: '',
+            code: '',
+        },
+        message: '',
+        details: '',
+    };
 
     //Validering/felhantering
     if (!company) {
