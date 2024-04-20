@@ -4,7 +4,7 @@ Av S.E.K för DT207G
 
 ## Installation
 
-Mitt API använder MySQL som databas. Variablerna ligger i en .env-fil. Du kan se vilka variabler du behöver nedan.
+Mitt API använder MySQL som databashanterare. Variablerna ligger i en .env-fil. Du kan se vilka variabler du behöver nedan.
 
 ```
 DB_HOST=YOUR_HOST
@@ -25,14 +25,15 @@ Tabellen som skapas ser ut som följande:
 
 ## Användning
 
-För att nå API:et använder du /api följt av något av följande:
-| Metod | Ändpunkt | Beskrivning |
-| ----- | -------- | ----------- |
-| GET | /cv | Hämtar all data | 
-| GET | /cv/:id | Hämtar all data tillhörande specifikt ID |
-| POST | /cv | Lagrar ny jobbinstans |
-| PUT | /cv/:id | Uppdaterar jobbinstans med specifikt ID |
-| DELETE | /cv/:id | Tar bort jobbinstans med specifikt ID |
+API:et nås på https://cv-api-nqg3.onrender.com/api följt av någon av dessa metoder/queries:
+
+| Metod  | Ändpunkt | Beskrivning                               |
+| ------ | -------- | ----------------------------------------- | --- |
+| GET    |  /cv     |  Hämtar all data                          |     |
+|  GET   |  /cv/:id |  Hämtar all data tillhörande specifikt ID |
+|  POST  |  /cv     |  Lagrar ny jobbinstans                    |
+| PUT    |  /cv/:id |  Uppdaterar jobbinstans med specifikt ID  |
+| DELETE |  /cv/:id |  Tar bort jobbinstans med specifikt ID    |
 
 API:et svarar i JSON-format:
 
@@ -48,3 +49,7 @@ API:et svarar i JSON-format:
   }
 ]
 ```
+
+## Begränsningar
+
+Max 3 anslutningar samtidigt.

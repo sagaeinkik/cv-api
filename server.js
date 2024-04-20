@@ -18,8 +18,16 @@ const db = mysql.createConnection({
 });
 
 db.connect((err) => {
+    //Stäng ner anslutning om det går fel
     if (err) {
         console.log('Anslutning till databasen misslyckades: ' + err);
+        db.end((error) => {
+            if (error) {
+                console.error('Något gick fel vid nedkoppling från databas:', error);
+                return;
+            }
+            console.log('Databasanslutning avslutad');
+        });
     } else {
         console.log('Anslutning till databasen lyckades');
     }
@@ -76,6 +84,7 @@ app.get('/api/cv', (req, res) => {
     );
 });
 
+//Specifikt jobb
 app.get('/api/cv/:id', (req, res) => {
     //Lagra param
     let id = req.params.id;
@@ -179,23 +188,122 @@ app.post('/api/cv', (req, res) => {
     }
 });
 
-//Uppdatera befintligt jobb
-app.put('/api/cv/:id', (req, res) => {
-    res.json({ message: 'Put lyckades med id: ' + req.params.id });
+/* Uppdatering */
+//ange id
+app.put('/api/cv', (req, res) => {
+    errors.https_response.message = 'Bad request';
+    errors.https_response.code = 400;
+    errors.message = 'URL query missing';
+    errors.details = 'You must supply an id to update';
+    res.status(errors.https_response.code).json({ error: errors });
 });
 
-//Radera jobb
-app.delete('/api/cv/:id', (req, res) => {
+//Uppdatera rad
+app.put('/api/cv/:id', (req, res) => {
+    //Variabler
     let id = req.params.id;
-    //Kolla om det finns id i parameter annars ge felmeddelande
-    if (id === '') {
+    let company = req.body.company;
+    let title = req.body.title;
+    let description = req.body.description;
+    let startDate = req.body.startDate;
+    let endDate = req.body.endDate;
+
+    //Validering/felhantering
+    if (!company) {
         errors.https_response.message = 'Bad request';
         errors.https_response.code = 400;
-        errors.message = 'Parameter missing';
-        errors.details = 'You must supply an id in parameter';
+        errors.message = 'Input missing';
+        errors.details = 'You must fill out name of company';
+    } else if (!title) {
+        errors.https_response.message = 'Bad request';
+        errors.https_response.code = 400;
+        errors.message = 'Input missing';
+        errors.details = 'You must fill out jobtitle';
+    } else if (!description) {
+        errors.https_response.message = 'Bad request';
+        errors.https_response.code = 400;
+        errors.message = 'Input missing';
+        errors.details = 'You must fill out job description';
+    } else if (!startDate || startDate === undefined) {
+        errors.https_response.message = 'Bad request';
+        errors.https_response.code = 400;
+        errors.message = 'Input missing';
+        errors.details = 'You must fill out start date';
+    }
+
+    //Om det finns ett error-meddelande, avbryt och skicka med error
+    if (errors.message !== '') {
         res.status(errors.https_response.code).json({ error: errors });
         return;
+    } else {
+        //Leta upp rad som ska ändras
+        db.query(`SELECT * FROM cv WHERE id=?`, [id], (err, result) => {
+            //error
+            if (err) {
+                errors.https_response.message = 'Internal server error';
+                errors.https_response.code = 500;
+                res.status(errors.https_response.code).json({ error: errors });
+                return;
+            } else if (result.length < 1) {
+                //Kontrollera längd; om det inte gav något resultat så finns inte den posten
+                errors.https_response.message = 'Not found';
+                errors.https_response.code = 404;
+                errors.message = 'Matching data not found';
+                errors.details = 'There is no post in the database with that ID';
+                res.status(errors.https_response.code).json({ error: errors });
+                return;
+            }
+            //Allt är bra hittills så då uppdaterar vi
+            db.query(
+                `UPDATE cv SET company=?, title=?, description=?, start_date=?, end_date=? WHERE id=?`,
+                [company, title, description, startDate, endDate, id],
+                (err, result) => {
+                    if (err) {
+                        errors.https_response.message = 'Internal server error';
+                        errors.https_response.code = 500;
+                        res.status(errors.https_response.code).json({ error: errors });
+                        return;
+                    }
+                    //Gör jobbinstans
+                    let job = {
+                        company: company,
+                        title: title,
+                        description: description,
+                        startDate: startDate,
+                        endDate: endDate,
+                    };
+                    //Kolla om det funka
+                    res.json({ message: 'Updated job with id: ' + id, job, result });
+                }
+            );
+        });
     }
+});
+
+/* Radera jobb */
+
+//Routing för om man inte angett parameter
+app.delete('/api/cv', (req, res) => {
+    errors.https_response.message = 'Bad request';
+    errors.https_response.code = 400;
+    errors.message = 'URL query missing';
+    errors.details = 'You must supply an id to delete';
+    res.status(errors.https_response.code).json({ error: errors });
+});
+
+//Routing för att radera id
+app.delete('/api/cv/:id', (req, res) => {
+    let id = req.params.id;
+
+    //Här försökte jag få till validering för id men den hade ingen effekt så jag gjorde en ny route istället
+    /* if (id === '') {
+        errors.https_response.message = 'Bad request';
+        errors.https_response.code = 400;
+        errors.message = 'URL query missing';
+        errors.details = 'You must supply an id to delete';
+        res.status(errors.https_response.code).json({ error: errors });
+        return;
+    } */
 
     //Välj ut post med det ID:et
     db.query(`SELECT * FROM cv WHERE id=?`, [id], (err, result) => {
