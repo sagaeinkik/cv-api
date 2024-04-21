@@ -45,6 +45,15 @@ app.get('/api', (req, res) => {
 
 //Hämta alla jobb
 app.get('/api/cv', (req, res) => {
+    //Error-meddelanden: (de behöver ändå återställas)
+    let errors = {
+        https_response: {
+            message: '',
+            code: '',
+        },
+        message: '',
+        details: '',
+    };
     //Hämta data ur cv-tabell och formattera datumet snyggare
     db.query(
         `SELECT id, company, title, description, DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date, DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date FROM cv;
@@ -79,6 +88,15 @@ app.get('/api/cv', (req, res) => {
 app.get('/api/cv/:id', (req, res) => {
     //Lagra param
     let id = req.params.id;
+    //Error-meddelanden: (de behöver ändå återställas)
+    let errors = {
+        https_response: {
+            message: '',
+            code: '',
+        },
+        message: '',
+        details: '',
+    };
 
     db.query(
         `SELECT id, company, title, description, DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date, DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date FROM cv WHERE id=?`,
