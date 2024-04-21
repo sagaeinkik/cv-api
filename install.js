@@ -33,7 +33,7 @@ db.query(
     `
     CREATE TABLE IF NOT EXISTS cv (
         id SERIAL PRIMARY KEY, 
-        company VARCHAR(50), 
+        employer VARCHAR(50), 
         title VARCHAR(50), 
         description VARCHAR(255), 
         start_date DATE, 

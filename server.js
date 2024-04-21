@@ -64,7 +64,7 @@ app.get('/api/cv', (req, res) => {
     };
     //Hämta data ur cv-tabell och formattera datumet snyggare
     db.query(
-        `SELECT id, company, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv;
+        `SELECT id, employer, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv;
     `,
         (err, results) => {
             if (err) {
@@ -107,7 +107,7 @@ app.get('/api/cv/:id', (req, res) => {
     };
 
     db.query(
-        `SELECT id, company, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv WHERE id=$1;`,
+        `SELECT id, employer, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv WHERE id=$1;`,
         [id],
         (err, result) => {
             if (err) {
@@ -136,7 +136,7 @@ app.get('/api/cv/:id', (req, res) => {
 //Lägg till nytt jobb
 app.post('/api/cv', (req, res) => {
     //Lagra datan i variabler
-    let company = req.body.company;
+    let employer = req.body.employer;
     let title = req.body.title;
     let description = req.body.description;
     let startDate = req.body.startDate;
@@ -157,11 +157,11 @@ app.post('/api/cv', (req, res) => {
     };
 
     //Validering/felhantering
-    if (!company) {
+    if (!employer) {
         errors.https_response.message = 'Bad request';
         errors.https_response.code = 400;
         errors.message = 'Input missing';
-        errors.details = 'You must fill out name of company';
+        errors.details = 'You must fill out name of employer';
     } else if (!title) {
         errors.https_response.message = 'Bad request';
         errors.https_response.code = 400;
@@ -187,9 +187,9 @@ app.post('/api/cv', (req, res) => {
     } else {
         //Om error inte finns, lägg till data i tabellen
         db.query(
-            `INSERT INTO cv (company, title, description, start_date, end_date)
+            `INSERT INTO cv (employer, title, description, start_date, end_date)
             VALUES ($1, $2, $3, $4, $5);`,
-            [company, title, description, startDate, endDate],
+            [employer, title, description, startDate, endDate],
             (err, result) => {
                 if (err) {
                     //Hantera error
@@ -203,7 +203,7 @@ app.post('/api/cv', (req, res) => {
                 }
                 //Gör jobb-objekt att visa i thunderclient
                 let job = {
-                    company: company,
+                    employer: employer,
                     title: title,
                     description: description,
                     startDate: startDate,
@@ -239,7 +239,7 @@ app.put('/api/cv', (req, res) => {
 app.put('/api/cv/:id', (req, res) => {
     //Variabler
     let id = req.params.id;
-    let company = req.body.company;
+    let employer = req.body.employer;
     let title = req.body.title;
     let description = req.body.description;
     let startDate = req.body.startDate;
@@ -256,11 +256,11 @@ app.put('/api/cv/:id', (req, res) => {
     };
 
     //Validering/felhantering
-    if (!company) {
+    if (!employer) {
         errors.https_response.message = 'Bad request';
         errors.https_response.code = 400;
         errors.message = 'Input missing';
-        errors.details = 'You must fill out name of company';
+        errors.details = 'You must fill out name of employer';
     } else if (!title) {
         errors.https_response.message = 'Bad request';
         errors.https_response.code = 400;
@@ -304,9 +304,9 @@ app.put('/api/cv/:id', (req, res) => {
             //Allt är bra hittills så då uppdaterar vi
             db.query(
                 `UPDATE cv 
-                SET company=$1, title=$2, description=$3, start_date=$4, end_date=$5 
+                SET employer=$1, title=$2, description=$3, start_date=$4, end_date=$5 
                 WHERE id=$6;`,
-                [company, title, description, startDate, endDate, id],
+                [employer, title, description, startDate, endDate, id],
                 (err, result) => {
                     if (err) {
                         errors.https_response.message = 'Internal server error';
@@ -317,7 +317,7 @@ app.put('/api/cv/:id', (req, res) => {
                     }
                     //Gör jobbinstans
                     let job = {
-                        company: company,
+                        employer: employer,
                         title: title,
                         description: description,
                         startDate: startDate,
