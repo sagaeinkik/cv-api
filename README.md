@@ -4,7 +4,7 @@ Av S.E.K för DT207G
 
 ## Installation
 
-Mitt API använder MySQL som databashanterare. Variablerna ligger i en .env-fil. Du kan se vilka variabler du behöver nedan.
+Mitt API använder PostgreSQL som databashanterare. Variablerna ligger i en .env-fil. Du kan se vilka variabler du behöver nedan.
 
 ```
 DB_HOST=YOUR_HOST
@@ -16,7 +16,8 @@ PORT=YOUR_PORT
 ```
 
 För att testa lokalt finns installationsfilen `install.js` som du kör med kommandot `npm run install`.
-_Observera att detta tar bort tabellen "cv" om det finns en, så använd med försiktighet._
+_Observera att detta tar bort tabellen "cv" om det finns en, så använd med försiktighet._  
+Pga SSL behöver man stänga anslutningen manuellt i terminalen/kommandotolken.
 
 Tabellen som skapas ser ut som följande:
 | ID :key: | company | title | description | start_date | end_date |
@@ -50,6 +51,6 @@ API:et svarar i JSON-format:
 ]
 ```
 
-## Begränsningar
+## INFO
 
-Max 3 anslutningar samtidigt.
+Har bytt från MySQL till PostgreSQL via Render pga för många haverier.

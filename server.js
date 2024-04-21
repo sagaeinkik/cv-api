@@ -1,6 +1,6 @@
 const express = require('express');
 require('dotenv').config();
-const mysql = require('mysql');
+const { Client } = require('pg');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -9,12 +9,15 @@ app.use(cors());
 app.use(express.json());
 
 //Databas-anslutning
-const db = mysql.createConnection({
+const db = new Client({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
+    ssl: {
+        rejectUnauthorized: false,
+    },
 });
 
 db.on('error', (err) => {
@@ -61,7 +64,7 @@ app.get('/api/cv', (req, res) => {
     };
     //Hämta data ur cv-tabell och formattera datumet snyggare
     db.query(
-        `SELECT id, company, title, description, DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date, DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date FROM cv;
+        `SELECT id, company, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv;;
     `,
         (err, results) => {
             if (err) {
@@ -83,7 +86,7 @@ app.get('/api/cv', (req, res) => {
                 return;
             } else {
                 //Visa resultat
-                res.json(results);
+                res.json(results.rows);
             }
         }
     );
@@ -104,7 +107,7 @@ app.get('/api/cv/:id', (req, res) => {
     };
 
     db.query(
-        `SELECT id, company, title, description, DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date, DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date FROM cv WHERE id=?`,
+        `SELECT id, company, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv WHERE id=$1;`,
         [id],
         (err, result) => {
             if (err) {
@@ -124,7 +127,7 @@ app.get('/api/cv/:id', (req, res) => {
                 return;
             } else {
                 //Visa resultat
-                res.json(result);
+                res.json(result.rows);
             }
         }
     );
@@ -184,10 +187,8 @@ app.post('/api/cv', (req, res) => {
     } else {
         //Om error inte finns, lägg till data i tabellen
         db.query(
-            `INSERT INTO cv
-        (company, title, description, start_date, end_date)
-        VALUES
-        (?, ?, ?, ?, ?);`,
+            `INSERT INTO cv (company, title, description, start_date, end_date)
+            VALUES ($1, $2, $3, $4, $5);`,
             [company, title, description, startDate, endDate],
             (err, result) => {
                 if (err) {
@@ -283,7 +284,7 @@ app.put('/api/cv/:id', (req, res) => {
         return;
     } else {
         //Leta upp rad som ska ändras
-        db.query(`SELECT * FROM cv WHERE id=?`, [id], (err, result) => {
+        db.query(`SELECT * FROM cv WHERE id=$1`, [id], (err, result) => {
             //error
             if (err) {
                 errors.https_response.message = 'Internal server error';
@@ -302,7 +303,9 @@ app.put('/api/cv/:id', (req, res) => {
             }
             //Allt är bra hittills så då uppdaterar vi
             db.query(
-                `UPDATE cv SET company=?, title=?, description=?, start_date=?, end_date=? WHERE id=?`,
+                `UPDATE cv 
+                SET company=$1, title=$2, description=$3, start_date=$4, end_date=$5 
+                WHERE id=$6;`,
                 [company, title, description, startDate, endDate, id],
                 (err, result) => {
                     if (err) {
@@ -343,18 +346,8 @@ app.delete('/api/cv', (req, res) => {
 app.delete('/api/cv/:id', (req, res) => {
     let id = req.params.id;
 
-    //Här försökte jag få till validering för id men den hade ingen effekt så jag gjorde en ny route istället
-    /* if (id === '') {
-        errors.https_response.message = 'Bad request';
-        errors.https_response.code = 400;
-        errors.message = 'URL query missing';
-        errors.details = 'You must supply an id to delete';
-        res.status(errors.https_response.code).json({ error: errors });
-        return;
-    } */
-
     //Välj ut post med det ID:et
-    db.query(`SELECT * FROM cv WHERE id=?`, [id], (err, result) => {
+    db.query(`SELECT * FROM cv WHERE id=$1`, [id], (err, result) => {
         if (err) {
             errors.https_response.message = 'Internal server error';
             errors.https_response.code = 500;
@@ -371,7 +364,7 @@ app.delete('/api/cv/:id', (req, res) => {
             return;
         }
         //Om vi har kommit såhär långt så tar vi bort den raden ur tabellen
-        db.query(`DELETE FROM cv WHERE id=?`, [id], (err, result) => {
+        db.query(`DELETE FROM cv WHERE id=$1`, [id], (err, result) => {
             if (err) {
                 errors.https_response.message = 'Internal server error';
                 errors.https_response.code = 500;
