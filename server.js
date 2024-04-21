@@ -142,10 +142,6 @@ app.post('/api/cv', (req, res) => {
     let startDate = req.body.startDate;
     let endDate = req.body.endDate;
 
-    if (endDate === null) {
-        endDate = 'Anställning pågående';
-    }
-
     //Error-meddelanden: (de behöver ändå återställas)
     let errors = {
         https_response: {
