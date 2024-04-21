@@ -77,17 +77,17 @@ app.get('/api/cv', (req, res) => {
                 return;
             }
             //Kontrollera att data finnes
-            /* if (!results.rows.length === 0) {
+            if (results.rows.length === 1) {
                 errors.https_response.message = 'Not found';
                 errors.https_response.code = 404;
                 errors.message = 'No data to show';
 
                 res.status(errors.https_response.code).json({ error: errors });
                 return;
-            } else { */
-            //Visa resultat
-            res.json(results.rows);
-            /* } */
+            } else {
+                //Visa resultat
+                res.json(results.rows);
+            }
         }
     );
 });
@@ -118,7 +118,7 @@ app.get('/api/cv/:id', (req, res) => {
                 console.log('Error from get api/cv/:id select query:', err);
                 return;
             }
-            if (result.length === 0) {
+            if (result.rows.length === 0) {
                 errors.https_response.message = 'Not found';
                 errors.https_response.code = 404;
                 errors.message = 'No data to show';
