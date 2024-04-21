@@ -64,7 +64,7 @@ app.get('/api/cv', (req, res) => {
     };
     //Hämta data ur cv-tabell och formattera datumet snyggare
     db.query(
-        `SELECT id, company, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv;;
+        `SELECT id, company, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv;
     `,
         (err, results) => {
             if (err) {
@@ -77,17 +77,17 @@ app.get('/api/cv', (req, res) => {
                 return;
             }
             //Kontrollera att data finnes
-            if (results.length === 0) {
+            /* if (!results.rows.length === 0) {
                 errors.https_response.message = 'Not found';
                 errors.https_response.code = 404;
                 errors.message = 'No data to show';
 
                 res.status(errors.https_response.code).json({ error: errors });
                 return;
-            } else {
-                //Visa resultat
-                res.json(results.rows);
-            }
+            } else { */
+            //Visa resultat
+            res.json(results.rows);
+            /* } */
         }
     );
 });
