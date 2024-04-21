@@ -25,7 +25,7 @@ Tabellen som skapas ser ut som följande:
 
 ## Användning
 
-API:et nås på https://cv-api-nqg3.onrender.com/api följt av någon av dessa metoder/queries:
+API:et nås med URL-queryn /api följt av någon av dessa metoder/queries:
 
 | Metod  | Ändpunkt | Beskrivning                               |
 | ------ | -------- | ----------------------------------------- |
