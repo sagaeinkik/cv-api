@@ -211,6 +211,15 @@ app.post('/api/cv', (req, res) => {
 /* Uppdatering */
 //ange id
 app.put('/api/cv', (req, res) => {
+    //Error-meddelanden: (de behöver ändå återställas)
+    let errors = {
+        https_response: {
+            message: '',
+            code: '',
+        },
+        message: '',
+        details: '',
+    };
     errors.https_response.message = 'Bad request';
     errors.https_response.code = 400;
     errors.message = 'URL query missing';
