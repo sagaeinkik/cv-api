@@ -73,7 +73,7 @@ app.get('/api/cv', (req, res) => {
                 errors.https_response.code = 500;
 
                 res.status(errors.https_response.code).json({ error: errors });
-                console.log('Fatal error from get /api/cv:', err.fatal);
+                console.log('Error from get api/CV:', err);
                 return;
             }
             //Kontrollera att data finnes
@@ -115,7 +115,7 @@ app.get('/api/cv/:id', (req, res) => {
                 errors.https_response.code = 500;
 
                 res.status(errors.https_response.code).json({ error: errors });
-                console.log('Fatal error from get /api/cv/:id :', err.fatal);
+                console.log('Error from get api/cv/:id select query:', err);
                 return;
             }
             if (result.length === 0) {
@@ -198,7 +198,7 @@ app.post('/api/cv', (req, res) => {
                     console.log(err);
 
                     res.status(errors.https_response.code).json({ error: errors });
-                    console.log('Fatal error from post /api/cv:', err.fatal);
+                    console.log('Error from post api/CV:', err);
                     return;
                 }
                 //Gör jobb-objekt att visa i thunderclient
@@ -290,7 +290,7 @@ app.put('/api/cv/:id', (req, res) => {
                 errors.https_response.message = 'Internal server error';
                 errors.https_response.code = 500;
                 res.status(errors.https_response.code).json({ error: errors });
-                console.log('Fatal error from put /api/cv:id with SELECT query:', err.fatal);
+                console.log('Error from PUT api/cv SELECT query:', err);
                 return;
             } else if (result.length < 1) {
                 //Kontrollera längd; om det inte gav något resultat så finns inte den posten
@@ -312,7 +312,7 @@ app.put('/api/cv/:id', (req, res) => {
                         errors.https_response.message = 'Internal server error';
                         errors.https_response.code = 500;
                         res.status(errors.https_response.code).json({ error: errors });
-                        console.log('Fatal error from put /api/cv:id with UPDATE query', err.fatal);
+                        console.log('Error from PUT api/cv UPDATE query:', err);
                         return;
                     }
                     //Gör jobbinstans
@@ -352,7 +352,7 @@ app.delete('/api/cv/:id', (req, res) => {
             errors.https_response.message = 'Internal server error';
             errors.https_response.code = 500;
             res.status(errors.https_response.code).json({ error: errors });
-            console.log('Fatal error from delete /api/cv:id SELECT query', err.fatal);
+            console.log('Error from delete /api/cv:id SELECT query', err);
             return;
         } else if (result.length < 1) {
             //Kontrollera längd; om det inte gav något resultat så finns inte den posten
@@ -369,7 +369,7 @@ app.delete('/api/cv/:id', (req, res) => {
                 errors.https_response.message = 'Internal server error';
                 errors.https_response.code = 500;
                 res.status(errors.https_response.code).json({ error: errors });
-                console.log('Fatal error from delete /api/cv:id DELETE query', err.fatal);
+                console.log('Error from delete /api/cv:id DELETE query', err);
                 return;
             }
             //Kolla om det funka
