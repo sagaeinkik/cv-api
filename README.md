@@ -20,7 +20,7 @@ _Observera att detta tar bort tabellen "cv" om det finns en, så använd med fö
 Pga SSL behöver man stänga anslutningen manuellt i terminalen/kommandotolken.
 
 Tabellen som skapas ser ut som följande:
-| ID :key: | company | title | description | start_date | end_date |
+| ID :key: | employer | title | description | start_date | end_date |
 | ------------- | ----------- | ----------- | ------------ | ------------ | ---------- |
 | Int not null | varchar(50) | varchar(50) | varchar(255) | date | date |
 
@@ -42,7 +42,7 @@ API:et svarar i JSON-format:
 [
   {
     "id": 1,
-    "company": "Firma 1",
+    "employer": "Firma 1",
     "title": "Jobb 1",
     "description": "Klappade katter",
     "start_date": "2023-04-14",
