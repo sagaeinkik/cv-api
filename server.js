@@ -64,7 +64,7 @@ app.get('/api/cv', (req, res) => {
     };
     //Hämta data ur cv-tabell och formattera datumet snyggare
     db.query(
-        `SELECT id, employer, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv ORDER BY DESC;
+        `SELECT id, employer, title, description, TO_CHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_CHAR(end_date, 'YYYY-MM-DD') AS end_date FROM cv ORDER BY id DESC;
     `,
         (err, results) => {
             if (err) {
